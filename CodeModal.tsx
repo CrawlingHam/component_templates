@@ -50,4 +50,35 @@ export default async function createVerificationLink(email: string) {
     return await app.auth().generateEmailVerificationLink(email);
 }
 
+import createVerificationLink from "@/src/lib/db/firebase/auth/createVerificationLink";
+import VerificationEmail from "@/emails/VerificationEmail";
+import { resend } from "./config";
+
+export default async function sendEmail(email: string) {
+    const verificationLink = await createVerificationLink(email);
+    console.log("verificationLink", verificationLink);
+
+    // Send the email
+    const emailResponse = await resend.emails.send({
+        from: "no-reply@flixburst.com",
+        to: email,
+        subject: "Your Verificationcode Code",
+        react: VerificationEmail({ verificationLink }),
+    });
+    console.log("emailResponse", emailResponse);
+
+    return {
+        response: emailResponse,
+        verificationLink,
+    };
+}
+
+import { Resend } from "resend";
+
+const resend_api_key = process.env.NEXT_PUBLIC_RESEND_API_KEY;
+const resend = new Resend(resend_api_key);
+
+export { resend };
+
+
 
