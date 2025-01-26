@@ -43,3 +43,11 @@ type ICodeModal = {
     email: string;
     code: string;
 };
+
+import { app } from "../admin-config";
+
+export default async function createVerificationLink(email: string) {
+    return await app.auth().generateEmailVerificationLink(email);
+}
+
+
